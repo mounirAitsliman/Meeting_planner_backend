@@ -17,10 +17,10 @@ public class SalleController {
             this.salleService = salleService;
         }
 
-        @PostMapping
-        public Salle ajouterSalle(@RequestBody Salle salle) {
-            return salleService.ajouterSalle(salle);
-        }
+        //@PostMapping
+        //public Salle ajouterSalle(@RequestBody Salle salle) {
+        //    return salleService.ajouterSalle(salle);
+        //}
 
         // Define other endpoints for reservations, availability, etc.
     }

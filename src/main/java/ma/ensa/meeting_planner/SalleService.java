@@ -12,10 +12,11 @@ public class SalleService {
             this.salleRepository = salleRepository;
         }
 
-        public Salle ajouterSalle(Salle salle) {
+        public Salle ajouterSalle(Salle salle) throws Exception {
             // Implement the logic to add a salle and save it using salleRepository
             // You can add additional business logic here
-            return salleRepository.save(salle);
+            throw new Exception();
+            //return salleRepository.save(salle);
         }
 
         // Implement other methods as required
