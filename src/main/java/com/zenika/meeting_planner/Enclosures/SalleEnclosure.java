@@ -3,11 +3,13 @@ package com.zenika.meeting_planner.Enclosures;
 import com.zenika.meeting_planner.Equipements.Equipement;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 @Data
 @Getter
+@NoArgsConstructor
 public class SalleEnclosure {
     // The room capacity is set to 70% due to covid
     private static double fullRatio=0.7;
@@ -115,5 +117,9 @@ public class SalleEnclosure {
     }
     public void addReservation(ReservationEnclosure reservationEnclosure){
         this.reservations.add(reservationEnclosure);
+    }
+    //lambok for getters and setters
+    public static double getFullRatio() {
+        return fullRatio;
     }
 }
