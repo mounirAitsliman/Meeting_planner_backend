@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 @RestController
-@RequestMapping("api/v1/rooms")
+@RequestMapping("api/salles")
 public class SalleController {
     private final SalleService salleService;
 
@@ -19,12 +19,12 @@ public class SalleController {
     }
 
     @GetMapping
-    public List<Salle> getRooms(){
+    public List<Salle> getSalles(){
         return this.salleService.getSalles();
     }
 
     @GetMapping("/generated")
-    public List<Salle> generateRooms(){
+    public List<Salle> generateSalles(){
         return this.salleService.generateSalles();
     }
 }

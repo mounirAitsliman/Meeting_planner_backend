@@ -9,7 +9,7 @@ import com.zenika.meeting_planner.Repositories.ReservationRepository;
 import com.zenika.meeting_planner.Repositories.SalleRepository;
 import com.zenika.meeting_planner.Response.Response;
 import com.zenika.meeting_planner.Services.ReservationService;
-import com.zenika.meeting_planner.Wrappers.SalleWrapper;
+import com.zenika.meeting_planner.Enclosures.SalleEnclosure;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,27 +37,28 @@ public class ReservationServiceDependantTest {
 
     @BeforeAll
     static void beforeAll() {
-        List<SalleWrapper> salles = Arrays.asList(
-                new SalleWrapper("E1001", 23, Arrays.asList(Equipement.NEANT)),
-                new SalleWrapper("E1002", 10, Arrays.asList(Equipement.ECRAN)),
-                new SalleWrapper("E1003", 8, Arrays.asList(Equipement.PIEUVRE)),
-                new SalleWrapper("E1004", 4, Arrays.asList(Equipement.TABLEAU)),
-                new SalleWrapper("E2001", 4, Arrays.asList(Equipement.NEANT)),
-                new SalleWrapper("E2002", 15, Arrays.asList(Equipement.ECRAN, Equipement.WEBCAM)),
-                new SalleWrapper("E2003", 7, Arrays.asList(Equipement.NEANT)),
-                new SalleWrapper("E2004", 9, Arrays.asList(Equipement.TABLEAU)),
-                new SalleWrapper("E3001", 13, Arrays.asList(Equipement.ECRAN, Equipement.WEBCAM, Equipement.PIEUVRE)),
-                new SalleWrapper("E3002", 8, Arrays.asList(Equipement.NEANT)),
-                new SalleWrapper("E3003", 9, Arrays.asList(Equipement.ECRAN, Equipement.PIEUVRE)),
-                new SalleWrapper("E3004", 4, Arrays.asList(Equipement.NEANT))
+        List<SalleEnclosure> salles = Arrays.asList(
+                new SalleEnclosure("E1001", 23, Arrays.asList(Equipement.NEANT)),
+                new SalleEnclosure("E1002", 10, Arrays.asList(Equipement.ECRAN)),
+                new SalleEnclosure("E1003", 8, Arrays.asList(Equipement.PIEUVRE)),
+                new SalleEnclosure("E1004", 4, Arrays.asList(Equipement.TABLEAU)),
+                new SalleEnclosure("E2001", 4, Arrays.asList(Equipement.NEANT)),
+                new SalleEnclosure("E2002", 15, Arrays.asList(Equipement.ECRAN, Equipement.WEBCAM)),
+                new SalleEnclosure("E2003", 7, Arrays.asList(Equipement.NEANT)),
+                new SalleEnclosure("E2004", 9, Arrays.asList(Equipement.TABLEAU)),
+                new SalleEnclosure("E3001", 13, Arrays.asList(Equipement.ECRAN, Equipement.WEBCAM, Equipement.PIEUVRE)),
+                new SalleEnclosure("E3002", 8, Arrays.asList(Equipement.NEANT)),
+                new SalleEnclosure("E3003", 9, Arrays.asList(Equipement.ECRAN, Equipement.PIEUVRE)),
+                new SalleEnclosure("E3004", 4, Arrays.asList(Equipement.NEANT))
         );
         sallesList = new ArrayList<>();
-        for (SalleWrapper salle : salles) {
+        for (SalleEnclosure salle : salles) {
             Salle newSalle = Salle.builder()
                     .name(salle.getName())
                     .capacity(salle.getRealCapacity())
                     .availableEquipements(salle.getAvailableEquipements())
                     .build();
+            //Salle newSalle = new Salle(salle.getName(),salle.getRealCapacity(),salle.getAvailableEquipements());
             sallesList.add(newSalle);
         }
     }
@@ -71,46 +72,50 @@ public class ReservationServiceDependantTest {
     // Now let's test the meetings we have in the use case(Monday Morning Reservations)
     @Test
     @Order(1)
-    void itShouldMake8FirstReservationsFromUseCase() {
-        // Testing from meeting 1 to 8 in the use case
-        NewReservation newReservation1 = new NewReservation(9, ReservationTypeEnum.VC, 8);
-        Response<Reservation> result1 = this.underTestService.reserveSalle(newReservation1);
-        Reservation res1=result1.getData();
-        res1.setSalle(sallesList.get(0)); // the algo is supposed to assign this
-        // meeting to salle E1001 # 1, but with 0 based indexing it's # 0
+    @DisplayName("monday use case test 1-8")
+    void reserveSalleFirstEightReservations() {
+
+        NewReservation newReservationOne = new NewReservation(9, ReservationTypeEnum.VC, 8);
+        Response<Reservation> resultOne = this.underTestService.reserveSalle(newReservationOne);
+        Reservation res1=resultOne.getData();
+        res1.setSalle(sallesList.get(0));
         reservationList.add(res1);
-        assertThat(result1.isError()).isFalse();
+        assertThat(resultOne.isError()).isFalse();
 
-        NewReservation newReservation2 = new NewReservation(9, ReservationTypeEnum.VC, 6);
-        Response<Reservation> result2 = this.underTestService.reserveSalle(newReservation2);
-        assertThat(result2.isError()).isTrue(); // It failed cuz salle is already booked
+        NewReservation newReservationTwo = new NewReservation(9, ReservationTypeEnum.VC, 6);
+        Response<Reservation> resultTwo = this.underTestService.reserveSalle(newReservationTwo);
+        assertThat(resultTwo.isError()).isTrue(); // It failed cuz salle is already booked
 
-        NewReservation newReservation3=new NewReservation(11, ReservationTypeEnum.RC, 4);
-        Response<Reservation> result3=this.underTestService.reserveSalle(newReservation3);
-        assertThat(result3.isError()).isTrue(); // No salle supporting Rc meetings
+        NewReservation newReservationThree=new NewReservation(11, ReservationTypeEnum.RC, 4);
+        Response<Reservation> resultThree=this.underTestService.reserveSalle(newReservationThree);
+        assertThat(resultThree.isError()).isTrue();
 
-        NewReservation newReservation4=new NewReservation(11, ReservationTypeEnum.RS, 2);
-        Response<Reservation> result4=this.underTestService.reserveSalle(newReservation4);
-        Reservation res4=result4.getData();
-        res4.setSalle(sallesList.get(2));
-        reservationList.add(res4);
-        assertThat(result4.isError()).isFalse();
 
-        NewReservation newReservation5=new NewReservation(11, ReservationTypeEnum.SPEC, 9);
-        Response<Reservation> result5=this.underTestService.reserveSalle(newReservation5);
-        assertThat(result5.isError()).isTrue(); // No salle has the cap for 9 people supporting Spec meetings
+        NewReservation newReservationFour=new NewReservation(11, ReservationTypeEnum.RS, 2);
+        Response<Reservation> resultFour=this.underTestService.reserveSalle(newReservationFour);
+        Reservation resFour=resultFour.getData();
+        resFour.setSalle(sallesList.get(2));
+        reservationList.add(resFour);
+        assertThat(resultFour.isError()).isFalse();
 
-        NewReservation newReservation6=new NewReservation(9, ReservationTypeEnum.RC, 7);
-        Response<Reservation> result6=this.underTestService.reserveSalle(newReservation6);
-        assertThat(result6.isError()).isTrue(); // No salle supports Rc meetings
+        NewReservation newReservationFive=new NewReservation(11, ReservationTypeEnum.SPEC, 9);
+        Response<Reservation> resultFive=this.underTestService.reserveSalle(newReservationFive);
+        assertThat(resultFive.isError()).isTrue();
+        // No salle has the cota-capacity for 9 people supporting Spec meetings
 
-        NewReservation newReservation7 = new NewReservation(8, ReservationTypeEnum.VC, 9);
-        Response<Reservation> result7 = this.underTestService.reserveSalle(newReservation7);
-        assertThat(result7.isError()).isTrue();
+        NewReservation newReservationSix=new NewReservation(9, ReservationTypeEnum.RC, 7);
+        Response<Reservation> resultSix=this.underTestService.reserveSalle(newReservationSix);
+        assertThat(resultSix.isError()).isTrue();
+        // No salle with adequat equipement supporting Rc meetings
 
-        NewReservation newReservation8 = new NewReservation(8, ReservationTypeEnum.SPEC, 10);
-        Response<Reservation> result8 = this.underTestService.reserveSalle(newReservation8);
-        assertThat(result8.isError()).isTrue(); // No salle has the cap for 10 people supporting Spec meetings
+        NewReservation newReservationSeven = new NewReservation(8, ReservationTypeEnum.VC, 9);
+        Response<Reservation> resultSeven = this.underTestService.reserveSalle(newReservationSeven);
+        assertThat(resultSeven.isError()).isTrue();
+
+        NewReservation newReservationEight = new NewReservation(8, ReservationTypeEnum.SPEC, 10);
+        Response<Reservation> resultEight = this.underTestService.reserveSalle(newReservationEight);
+        assertThat(resultEight.isError()).isTrue();
+        // No salle has the cota-capacity for 10 people supporting Spec meetings
 
     }
 }

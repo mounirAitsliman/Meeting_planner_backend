@@ -11,7 +11,6 @@ public class RcReservation implements ReservationType{
         mustHaveEquipements.add(Equipement.ECRAN);
         mustHaveEquipements.add(Equipement.PIEUVRE);
     }
-
     public ArrayList<Equipement> getMustHaveEquipements() {
         return mustHaveEquipements;
     }

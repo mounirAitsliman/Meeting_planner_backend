@@ -9,7 +9,6 @@ public class SpecReservation implements ReservationType{
     {
         mustHaveEquipements.add(Equipement.TABLEAU);
     }
-
     public ArrayList<Equipement> getMustHaveEquipements() {
         return mustHaveEquipements;
     }

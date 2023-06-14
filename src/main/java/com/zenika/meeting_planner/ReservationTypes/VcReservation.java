@@ -11,7 +11,6 @@ public class VcReservation implements ReservationType{
         mustHaveEquipements.add(Equipement.PIEUVRE);
         mustHaveEquipements.add(Equipement.WEBCAM);
     }
-
     public ArrayList<Equipement> getMustHaveEquipements() {
         return mustHaveEquipements;
     }

@@ -16,7 +16,7 @@ import org.hibernate.annotations.OnDeleteAction;
 public class Reservation {
     @Id
     @SequenceGenerator(
-            name="reservation_sequence",
+            name = "reservation_sequence",
             sequenceName = "reservation_sequence",
             allocationSize = 1
     )
@@ -34,6 +34,4 @@ public class Reservation {
     private int startingHour;
     private int numberOfPeople;
     private ReservationTypeEnum reservationTypeEnum;
-
-
 }

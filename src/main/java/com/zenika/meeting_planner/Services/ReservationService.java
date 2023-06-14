@@ -7,8 +7,8 @@ import com.zenika.meeting_planner.Repositories.ReservationRepository;
 import com.zenika.meeting_planner.Repositories.SalleRepository;
 import com.zenika.meeting_planner.ReservationTypes.ReservationTypeBuilder;
 import com.zenika.meeting_planner.Response.Response;
-import com.zenika.meeting_planner.Wrappers.ReservationWrapper;
-import com.zenika.meeting_planner.Wrappers.SalleWrapper;
+import com.zenika.meeting_planner.Enclosures.ReservationEnclosure;
+import com.zenika.meeting_planner.Enclosures.SalleEnclosure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +25,6 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
         this.salleRepository = salleRepository;
     }
-
-
     public List<Reservation> getReservations(){
         return this.reservationRepository.findAll();
     }
@@ -42,8 +40,7 @@ public class ReservationService {
                             + " reservations at the moment. Please try again later."
             );
         }
-
-        // Create the reservation
+        //Create the reservation
         Reservation reservation = Reservation.builder()
                 .salle(availableSalle)
                 .startingHour(newReservation.getStartingHour())
@@ -61,8 +58,9 @@ public class ReservationService {
         );
     }
 
-    // To find the appropriate salle we must minimize the gap between the actual number of people in a reservation
-    // of the type X(VC, SPEC, RS, RC) and the real capacity of the salle that supports that exact reservation type
+    // we loop through each salle and each reservation in the selected salle and we check if the ratio-capacity
+    //is adequate with the number of ppl in the reservation and we select the salle with the minimGap value to optimize 
+    //our resources
     private Salle findSalleForReservation(NewReservation reservation) {
         Salle selectedSalle = null;
         int minimumGap = Integer.MAX_VALUE;
@@ -71,11 +69,11 @@ public class ReservationService {
         List<Reservation> allReservations = reservationRepository.findAll();
 
         for (Salle salle : allSalles) {
-            List<ReservationWrapper> currentReservations = new ArrayList<>();
+            List<ReservationEnclosure> currentReservations = new ArrayList<>();
 
             for (Reservation existingReservation : allReservations) {
                 if (existingReservation.getSalle().getId() == salle.getId()) {
-                    currentReservations.add(new ReservationWrapper(
+                    currentReservations.add(new ReservationEnclosure(
                             existingReservation.getStartingHour(),
                             ReservationTypeBuilder.getReservationTypeFromReservationTypeEnum(existingReservation.getReservationTypeEnum()),
                             existingReservation.getNumberOfPeople()
@@ -83,20 +81,20 @@ public class ReservationService {
                 }
             }
 
-            SalleWrapper salleWrapper = new SalleWrapper(
+            SalleEnclosure salleEnclosure = new SalleEnclosure(
                     salle.getCapacity(),
                     salle.getAvailableEquipements(),
                     currentReservations
             );
 
-            ReservationWrapper newReservation = new ReservationWrapper(
+            ReservationEnclosure newReservation = new ReservationEnclosure(
                     reservation.getStartingHour(),
                     ReservationTypeBuilder.getReservationTypeFromReservationTypeEnum(reservation.getReservationTypeEnum()),
                     reservation.getNumOfPeople()
             );
 
-            if (salleWrapper.isReservationValid(newReservation)) {
-                int currentGap = (int) (salleWrapper.getFullRatio() * salle.getCapacity()) - reservation.getNumOfPeople();
+            if (salleEnclosure.isReservationValid(newReservation)) {
+                int currentGap = (int) (salleEnclosure.getFullRatio() * salle.getCapacity()) - reservation.getNumOfPeople();
                 if (currentGap < minimumGap) {
                     minimumGap = currentGap;
                     selectedSalle = salle;

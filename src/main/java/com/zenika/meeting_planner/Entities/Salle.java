@@ -31,6 +31,4 @@ public class Salle {
     @ElementCollection(targetClass = Equipement.class)
     @Enumerated(EnumType.STRING)
     private List<Equipement> availableEquipements= new ArrayList<>();
-
-
 }
