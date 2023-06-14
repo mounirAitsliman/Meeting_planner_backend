@@ -1,4 +1,4 @@
-package ma.ensa.meeting_planner;
+package com.zenika.meeting_planner;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
